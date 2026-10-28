@@ -54,11 +54,12 @@ and a `.zip` containing `KBMK.app`. The build is unsigned, so on first
 open right-click the app → **Open** to pass Gatekeeper.
 
 > **Platform note:** KBMK's heart — global key capture, in-place text
-> replacement, the per-app block list — is Windows machinery today.
-> The Linux and macOS builds run the full interface, settings and
-> translation providers, and degrade gracefully where a Windows-only
-> piece is missing (they say so in the log), but typing/paste
-> replacement is Windows-only for now.
+> replacement, the per-app block list — is Windows machinery, with
+> text replacement also working on Linux/X11 via XTest. The Linux and
+> macOS builds run the full interface, settings and translation
+> providers, and degrade gracefully where a Windows-only piece is
+> missing (they say so in the log); on macOS, typing/paste
+> replacement is still log-only for now.
 
 > **Size note:** an installed KBMK is ~250 MB. Almost all of it is the
 > Chromium runtime every Electron app carries (Discord, Slack and
@@ -179,6 +180,47 @@ Visual Studio Build Tools 2022 with the C++ workload).
 ---
 
 ## Changelog
+
+# KBMK (Kotha Bolo Mon Khule) — M7
+
+**Sentence offers (v0.7.0).** Word-by-word translation is fast, but
+grammar lives in the whole sentence. KBMK still translates each word
+the moment you finish it — that instant draft stays — and now, the
+moment a sentence ends (`. ! ? । ॥` or Enter), it translates the
+whole sentence as one piece and offers it above the pill:
+
+- **Space** swaps the whole sentence in (undoable with Ctrl+Alt+Z);
+  **Esc** keeps the word-by-word draft.
+- If the sentence translation reads the same as the draft, the pill
+  shows a short ✓ note instead of an offer — nothing to swap, and no
+  key is intercepted.
+- The offer expires after 15 seconds, and it dies the moment you type
+  on, click, or switch apps — a later Space is just a space. It never
+  fires mid-sentence and never replaces text silently.
+- Toggle: Settings → App behaviour → Sentence offers (on by
+  default).
+- Privacy, unchanged: a finished sentence goes to the same provider
+  you configured, with your own key — nothing else changes.
+
+Also in this release (since 0.6.2):
+
+- **Linux: text replacement now works on X11.** Translations are
+  typed into your editor via XTest (Backspace + clipboard paste with
+  save/restore, delimiter re-emit), not just logged. X11/XWayland
+  apps only; Wayland-native apps are untouched.
+- **Linux: API keys save correctly.** The app names the right key
+  store for your platform everywhere (Windows Credential Manager /
+  macOS Keychain / Linux Secret Service keychain), and on Linux the
+  fix is `sudo apt install libsecret-1-0 gnome-keyring` if keytar
+  can't load.
+- **Clipboard safety during replacements.** The app verifies its
+  clipboard write and waits before restoring your previous clipboard
+  contents, so a busy app can't paste the wrong text.
+- **The source code is public under GPL-3.0.** The repository now
+  holds the full source (plus the manual and these notes) — audit
+  exactly what KBMK does with your keystrokes.
+
+249 tests pass.
 
 # KBMK (Kotha Bolo Mon Khule) — M6.3
 
